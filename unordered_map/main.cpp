@@ -127,6 +127,67 @@ public:
     }
 
     size_t size() const { return num_elements; }
+
+public:
+    class Iterator
+    {
+    public:
+        using Node = typename UnorderedMap<K, V>::Node;
+
+        Iterator(std::vector<Node *> &buckets, size_t idx, Node *node)
+            : buckets_(buckets), idx_(idx), node_(node)
+        {
+            advance_to_valid();
+        }
+
+        std::pair<const K &, V &> operator*() const
+        {
+            return {node_->key, node_->value};
+        }
+
+        Iterator &operator++()
+        {
+            if (node_)
+                node_ = node_->next;
+            advance_to_valid();
+            return *this;
+        }
+
+        bool operator!=(const Iterator &other) const
+        {
+            return node_ != other.node_;
+        }
+
+    private:
+        void advance_to_valid()
+        {
+            while (!node_ && idx_ + 1 < buckets_.size())
+            {
+                node_ = buckets_[++idx_];
+            }
+        }
+
+        std::vector<Node *> buckets_;
+        size_t idx_;
+        Node *node_;
+    };
+
+    Iterator begin()
+    {
+        for (int i = 0; i < buckets.size(); i++)
+        {
+            if (buckets[i])
+            {
+                return Iterator(buckets, i, buckets[i]);
+            }
+        }
+        return end();
+    }
+
+    Iterator end()
+    {
+        return Iterator(buckets, buckets.size(), nullptr);
+    }
 };
 
 int main()
@@ -147,5 +208,10 @@ int main()
     else
     {
         std::cout << "Apple not found\n";
+    }
+
+    for (auto [k, v] : umap)
+    {
+        std::cout << k << ": " << v << "\n";
     }
 }
