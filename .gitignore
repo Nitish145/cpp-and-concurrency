@@ -1,0 +1,5 @@
+# Ignore all .dSYM folders (used for debugging symbols on macOS)
+**main.dSYM/
+
+# Ignore 'main' executable file in the root or any subfolder
+**/main
