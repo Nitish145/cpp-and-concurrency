@@ -6,6 +6,9 @@ public:
     FixedBlockAllocator(size_t blockSize, size_t blockCount)
         : size(blockSize), count(blockCount), buffer(nullptr), freeList(nullptr)
     {
+        // consider enabling hugepages allocation for this and divide the memory
+        // in smaller chunks as required, the whole page sits inside the TLB
+        // and there will no no page faults, great cache locality and super speed.
         buffer = new char[blockSize * blockCount];
         freeList = reinterpret_cast<FreeBlock *>(buffer);
 
